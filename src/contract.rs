@@ -18,7 +18,9 @@ use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
 use crate::state::{MinterData, TokenInfo, BALANCES, TOKEN_INFO};
 
 // version info for migration info
-const CONTRACT_NAME: &str = "crates.io:cw20-base";
+//Audit. 9
+//const CONTRACT_NAME: &str = "crates.io:cw20-base";
+const CONTRACT_NAME: &str = "crates.io:cw20-base-legacy";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -64,7 +66,16 @@ pub fn create_accounts(deps: &mut DepsMut, accounts: &[Cw20Coin]) -> StdResult<U
     let mut total_supply = Uint128::zero();
     for row in accounts {
         let address = deps.api.addr_canonicalize(&row.address)?;
-        BALANCES.save(deps.storage, address.as_slice(), &row.amount)?;
+        //Audit. 6
+        //BALANCES.save(deps.storage, address.as_slice(), &row.amount)?;
+        BALANCES.update(
+            deps.storage, 
+            address.as_slice(), 
+            |balance: Option<Uint128>| -> StdResult<_> { 
+                Ok(balance.unwrap_or_default() + row.amount) 
+            },
+        )?;
+        
         total_supply += row.amount;
     }
     Ok(total_supply)
