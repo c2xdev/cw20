@@ -10,7 +10,7 @@ Implements:
 - [x] CW20 Base
 - [x] Mintable extension
 - [x] Allowances extension
-
+-
 ## Running this contract
 
 You will need Rust 1.44.1+ with `wasm32-unknown-unknown` target installed.
